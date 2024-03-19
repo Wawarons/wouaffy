@@ -1,35 +1,54 @@
 package com.example.wouaffy.controller;
 
-import org.slf4j.LoggerFactory;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.wouaffy.ResponseData;
 import com.example.wouaffy.entity.User;
 import com.example.wouaffy.service.UserService;
 
-import ch.qos.logback.classic.Logger;
-
 @RestController
 public class UserController {
-	
-	@Autowired
-	private UserService userService;
-	
-	Logger logger = (Logger) LoggerFactory.getLogger(UserController.class);
-	
-	@GetMapping(path = "hello")
-	public String hello() {
-		return "Hello";
-	}
-	
-	@PostMapping(path = "signup")
-	public void signUp(@RequestBody User user) {
-		this.userService.signUp(user);
-		logger.info("Inscription");
-	}
-	
-	
+
+  @Autowired
+  private UserService userService;
+
+  private ResponseData responseData = new ResponseData();
+
+  @PostMapping(path = "/activation")
+  public ResponseEntity<ResponseData> accountActivation(@RequestBody Map<String, String> activation) {
+    
+    if(activation.get("code").isEmpty()) {
+      responseData.setCode(400);
+      responseData.setMessage("Code value cannot be empty.");
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseData);
+    }
+
+    this.userService.activationAccount(activation);
+    responseData.setCode(200);
+    responseData.setMessage("Account activated successfully.");
+    return ResponseEntity.status(HttpStatus.ACCEPTED).body(responseData);
+  }
+
+  @PostMapping(path = "signup")
+  public ResponseEntity<ResponseData> signUp(@RequestBody User user) {
+    
+    if (user.getEmail().isEmpty() || user.getUsername().isEmpty() || user.getPassword().isEmpty()) {
+      responseData.setCode(400);
+      responseData.setMessage("Values cannot be null.");
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseData);
+    }
+
+    this.userService.signUp(user);
+    responseData.setCode(200);
+    responseData.setMessage( "Account created successfully.");
+    return ResponseEntity.status(HttpStatus.ACCEPTED).body(responseData);
+  }
+
 }

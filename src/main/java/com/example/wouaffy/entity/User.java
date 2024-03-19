@@ -1,13 +1,14 @@
 package com.example.wouaffy.entity;
 
+import java.time.Instant;
 import java.util.Collection;
 import java.util.Collections;
 
-import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import io.micrometer.common.lang.NonNull;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -21,25 +22,31 @@ import jakarta.persistence.Table;
 @Table(name = "user_account")
 public class User implements UserDetails {
 
-	private static final long serialVersionUID = 1L;
-
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 
+	@NonNull
 	@Column(name = "user_account_username")
 	private String username;
 
+	@NonNull
 	@Column(name = "user_account_email")
 	private String email;
 	
+	@NonNull
+	@Column(name = "user_account_password")
+	private String password;
+
 	@Column(name = "user_account_active")
 	private boolean isActive = false;
+
+	@Column(name = "user_created_at")
+	private Instant created_at;
 	
 	@OneToOne(cascade = CascadeType.ALL)
 	private Role role;
 	
-
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + this.role.getRole()));
@@ -47,26 +54,22 @@ public class User implements UserDetails {
 
 	@Override
 	public boolean isAccountNonExpired() {
-		// TODO Auto-generated method stub
-		return false;
+		return this.isActive;
 	}
 
 	@Override
 	public boolean isAccountNonLocked() {
-		// TODO Auto-generated method stub
-		return false;
+		return this.isActive;
 	}
 
 	@Override
 	public boolean isCredentialsNonExpired() {
-		// TODO Auto-generated method stub
-		return false;
+		return this.isActive;
 	}
 
 	@Override
 	public boolean isEnabled() {
-		// TODO Auto-generated method stub
-		return false;
+		return this.isActive;
 	}
 
 	public String getEmail() {
@@ -77,8 +80,6 @@ public class User implements UserDetails {
 		this.email = email;
 	}
 
-	@Column(name = "user_account_password")
-	private String password;
 
 	public long getId() {
 		return id;
@@ -118,6 +119,14 @@ public class User implements UserDetails {
 
 	public void setRole(Role role) {
 		this.role = role;
+	}
+
+	public Instant getCreated_at() {
+		return created_at;
+	}
+
+	public void setCreated_at(Instant created_at) {
+		this.created_at = created_at;
 	}
 
 	

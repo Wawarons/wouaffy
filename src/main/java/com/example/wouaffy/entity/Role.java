@@ -1,6 +1,8 @@
 package com.example.wouaffy.entity;
 
 import com.example.wouaffy.RoleType;
+
+import io.micrometer.common.lang.NonNull;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -22,6 +24,12 @@ public class Role {
 	@Enumerated(EnumType.STRING)
 	private RoleType role;
 
+	public Role(RoleType role) {
+		this.role = role;
+	}
+	
+	public Role(){};
+	
 	public long getId() {
 		return id;
 	}
@@ -30,6 +38,7 @@ public class Role {
 		this.id = id;
 	}
 
+	@NonNull
 	public RoleType getRole() {
 		return role;
 	}
@@ -38,6 +47,4 @@ public class Role {
 		this.role = role;
 	}
 	
-	
-
 }
