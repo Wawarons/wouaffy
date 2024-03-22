@@ -2,6 +2,7 @@ package com.example.wouaffy.entity;
 
 import java.time.Instant;
 
+import io.micrometer.common.lang.NonNull;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -9,27 +10,33 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 
 @Entity
+@Table(name = "validation")
 public class Validation {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private long id;
 
+  @NonNull
   @Column(name = "validation_creation")
   private Instant creation;
 
+  @NonNull
   @Column(name = "validation_expiration")
   private Instant expiration;
 
+  @NonNull
   @Column(name = "validation_code")
   private String code;
 
   @OneToOne(cascade = CascadeType.ALL)
   private User user;
 
-  Validation() {};
+  Validation() {
+  };
 
   Validation(Builder builder) {
     this.creation = builder.creation;
@@ -40,36 +47,37 @@ public class Validation {
 
   public static class Builder {
 
-     private Instant creation;
-     private Instant expiration;
-     private String code;
-     private User user;
+    private Instant creation;
+    private Instant expiration;
+    private String code;
+    private User user;
 
-     public Builder setCreation(Instant creation) {
+    public Builder setCreation(Instant creation) {
       this.creation = creation;
       return this;
-     }
+    }
 
-     public Builder setExpiration(Instant expiration) {
+    public Builder setExpiration(Instant expiration) {
       this.expiration = expiration;
       return this;
-     }
-     
-     public Builder setCode(String code) {
+    }
+
+    public Builder setCode(String code) {
       this.code = code;
       return this;
-     }
-     public Builder setUser(User user) {
+    }
+
+    public Builder setUser(User user) {
       this.user = user;
       return this;
-     }
+    }
 
-     public Validation build() {
+    public Validation build() {
       return new Validation(this);
-     }
+    }
   }
- 
-  //Getters & Setters
+
+  // Getters & Setters
   public long getId() {
     return id;
   }
@@ -109,7 +117,5 @@ public class Validation {
   public void setUser(User user) {
     this.user = user;
   }
-
-
 
 }

@@ -7,6 +7,9 @@ import java.util.Optional;
 import javax.management.RuntimeErrorException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -18,19 +21,22 @@ import com.example.wouaffy.entity.User;
 import com.example.wouaffy.entity.Validation;
 
 @Service
-public class UserService {
-
-  @Autowired
-  private UserRepository userRepository;
+public class UserService implements UserDetailsService {
 
   @Autowired
   private ValidationRepository validationRepository;
+
+  @Autowired
+  private UserRepository userRepository;
 
   @Autowired
   private ValidationService validationService;
 
   @Autowired
   private BCryptPasswordEncoder passwordEncoder;
+
+  UserService() {
+  }
 
   public void signUp(User user) {
     Optional<User> userFound = this.userRepository.findByEmail(user.getEmail());
@@ -60,6 +66,12 @@ public class UserService {
     userActive.setCreated_at(Instant.now());
     this.userRepository.save(userActive);
     this.validationRepository.save(validation);
+  }
+
+  @Override
+  public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    return this.userRepository.findByEmail(username)
+        .orElseThrow(() -> new UsernameNotFoundException("Account not found. for: " + username));
   }
 
 }

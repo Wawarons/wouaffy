@@ -27,13 +27,13 @@ public class ValidationService {
 
   public void createValidation(User user) {
     Instant creation = Instant.now();
-    
+
     Validation validation = new Validation.Builder()
-    .setCreation(creation)
-    .setExpiration(creation.plus(10, ChronoUnit.MINUTES))
-    .setCode(generateCode())
-    .setUser(user).build();
-    
+        .setCreation(creation)
+        .setExpiration(creation.plus(10, ChronoUnit.MINUTES))
+        .setCode(generateCode())
+        .setUser(user).build();
+
     this.validationRepository.save(validation);
     this.notificationService.send(validation);
   }

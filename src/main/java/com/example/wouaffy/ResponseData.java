@@ -1,33 +1,35 @@
 package com.example.wouaffy;
 
 public class ResponseData {
-private int code;
-    private String message;
+  private int code;
+  private String message;
 
-    public ResponseData(int code, String message) {
-        this.code = code;
-        this.message = message;
-    }
+  public ResponseData(int code, String message) {
+    this.code = code;
+    this.message = message;
+  }
 
-    public ResponseData() {};
+  public ResponseData(int code) {
+    this.code = code;
+  }
 
-    public int getCode() {
-        return code;
-    }
+  public ResponseData() {
+  };
 
-    public void setCode(int code) {
-        this.code = code;
-    }
+  public int getCode() {
+    return code;
+  }
 
-    public String getMessage() {
-        return message;
-    }
+  public void setCode(int code) {
+    this.code = code;
+  }
 
-    public void setMessage(String message) {
-        this.message = message;
-    }
+  public String getMessage() {
+    return message;
+  }
 
-    
-
+  public void setMessage(String message) {
+    this.message = message;
+  }
 
 }

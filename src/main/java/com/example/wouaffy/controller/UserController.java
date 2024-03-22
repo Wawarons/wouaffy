@@ -3,15 +3,23 @@ package com.example.wouaffy.controller;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.wouaffy.ResponseData;
+import com.example.wouaffy.Dto.AuthentificationDTO;
 import com.example.wouaffy.entity.User;
+import com.example.wouaffy.service.JwtService;
+import com.example.wouaffy.service.ResponseService;
 import com.example.wouaffy.service.UserService;
+
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 
 @RestController
 public class UserController {
@@ -19,36 +27,56 @@ public class UserController {
   @Autowired
   private UserService userService;
 
-  private ResponseData responseData = new ResponseData();
+  @Autowired
+  private AuthenticationManager authenticationManager;
 
-  @PostMapping(path = "/activation")
+  @Autowired
+  private ResponseService responseService;
+
+  @Autowired
+  private JwtService jwtService;
+
+  @PostMapping(path = "/auth/activation")
   public ResponseEntity<ResponseData> accountActivation(@RequestBody Map<String, String> activation) {
-    
-    if(activation.get("code").isEmpty()) {
-      responseData.setCode(400);
-      responseData.setMessage("Code value cannot be empty.");
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseData);
+
+    if (activation.get("code").isEmpty()) {
+      return responseService.createResponse(400, "Code value cannot be empty.");
     }
 
-    this.userService.activationAccount(activation);
-    responseData.setCode(200);
-    responseData.setMessage("Account activated successfully.");
-    return ResponseEntity.status(HttpStatus.ACCEPTED).body(responseData);
+    userService.activationAccount(activation);
+    return responseService.createResponse(200, "Account activated successfully.");
   }
 
-  @PostMapping(path = "signup")
+  @PostMapping(path = "/auth/signup")
   public ResponseEntity<ResponseData> signUp(@RequestBody User user) {
-    
+
     if (user.getEmail().isEmpty() || user.getUsername().isEmpty() || user.getPassword().isEmpty()) {
-      responseData.setCode(400);
-      responseData.setMessage("Values cannot be null.");
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseData);
+      return responseService.createResponse(400, "Values cannot be null.");
     }
 
     this.userService.signUp(user);
-    responseData.setCode(200);
-    responseData.setMessage( "Account created successfully.");
-    return ResponseEntity.status(HttpStatus.ACCEPTED).body(responseData);
+    return responseService.createResponse(200, "Account created successfully.");
   }
 
+  @PostMapping(path = "/auth/login")
+  public ResponseEntity<ResponseData> login(@RequestBody AuthentificationDTO authentificationDTO,
+      HttpServletResponse response) {
+
+    final Authentication authenticate = authenticationManager.authenticate(
+        new UsernamePasswordAuthenticationToken(authentificationDTO.email(),
+            authentificationDTO.password()));
+
+    if (authenticate.isAuthenticated()) {
+
+      Map<String, String> bearer = this.jwtService.generate(authentificationDTO.email());
+
+      Cookie cookie = new Cookie("token", bearer.get("Bearer"));
+      cookie.setHttpOnly(true);
+      cookie.setSecure(true);
+
+      return responseService.createResponse(200, "Login successfully.");
+    }
+
+    return responseService.createResponse(400, "Bad credentials.");
+  }
 }

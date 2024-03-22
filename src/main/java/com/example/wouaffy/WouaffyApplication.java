@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class WouaffyApplication {
 
   public static void main(String[] args) {
-    SpringApplication.run(WouaffyApplication.class, args);
+    SpringApplication.run(WouaffyApplication.class, "--debug");
   }
 
 }

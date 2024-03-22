@@ -22,112 +22,121 @@ import jakarta.persistence.Table;
 @Table(name = "user_account")
 public class User implements UserDetails {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private long id;
 
-	@NonNull
-	@Column(name = "user_account_username")
-	private String username;
+  @NonNull
+  @Column(name = "user_account_username")
+  private String username;
 
-	@NonNull
-	@Column(name = "user_account_email")
-	private String email;
-	
-	@NonNull
-	@Column(name = "user_account_password")
-	private String password;
+  @NonNull
+  @Column(name = "user_account_email")
+  private String email;
 
-	@Column(name = "user_account_active")
-	private boolean isActive = false;
+  @NonNull
+  @Column(name = "user_account_password")
+  private String password;
 
-	@Column(name = "user_created_at")
-	private Instant created_at;
-	
-	@OneToOne(cascade = CascadeType.ALL)
-	private Role role;
-	
-	@Override
-	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + this.role.getRole()));
-	}
+  @Column(name = "user_account_active")
+  private boolean isActive = false;
 
-	@Override
-	public boolean isAccountNonExpired() {
-		return this.isActive;
-	}
+  @Column(name = "user_created_at")
+  private Instant created_at;
 
-	@Override
-	public boolean isAccountNonLocked() {
-		return this.isActive;
-	}
+  @OneToOne(cascade = CascadeType.ALL)
+  private Role role;
 
-	@Override
-	public boolean isCredentialsNonExpired() {
-		return this.isActive;
-	}
+  User(long id, String username, String password, boolean isActive, Instant created_at, Role role) {
+    this.id = id;
+    this.password = password;
+    this.isActive = isActive;
+    this.created_at = created_at;
+    this.role = role;
+  }
 
-	@Override
-	public boolean isEnabled() {
-		return this.isActive;
-	}
+  User() {
+  };
 
-	public String getEmail() {
-		return email;
-	}
+  @Override
+  public Collection<? extends GrantedAuthority> getAuthorities() {
+    return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + this.role.getRole()));
+  }
 
-	public void setEmail(String email) {
-		this.email = email;
-	}
+  @Override
+  public boolean isAccountNonExpired() {
+    return this.isActive;
+  }
 
+  @Override
+  public boolean isAccountNonLocked() {
+    return this.isActive;
+  }
 
-	public long getId() {
-		return id;
-	}
+  @Override
+  public boolean isCredentialsNonExpired() {
+    return this.isActive;
+  }
 
-	public void setId(long id) {
-		this.id = id;
-	}
+  @Override
+  public boolean isEnabled() {
+    return this.isActive;
+  }
 
-	public String getUsername() {
-		return username;
-	}
+  public String getEmail() {
+    return email;
+  }
 
-	public void setUsername(String username) {
-		this.username = username;
-	}
+  public void setEmail(String email) {
+    this.email = email;
+  }
 
-	public String getPassword() {
-		return password;
-	}
+  public long getId() {
+    return id;
+  }
 
-	public void setPassword(String password) {
-		this.password = password;
-	}
+  public void setId(long id) {
+    this.id = id;
+  }
 
-	public boolean isActive() {
-		return isActive;
-	}
+  public String getUsername() {
+    return username;
+  }
 
-	public void setActive(boolean isActive) {
-		this.isActive = isActive;
-	}
+  public void setUsername(String username) {
+    this.username = username;
+  }
 
-	public Role getRole() {
-		return role;
-	}
+  public String getPassword() {
+    return password;
+  }
 
-	public void setRole(Role role) {
-		this.role = role;
-	}
+  public void setPassword(String password) {
+    this.password = password;
+  }
 
-	public Instant getCreated_at() {
-		return created_at;
-	}
+  public boolean isActive() {
+    return isActive;
+  }
 
-	public void setCreated_at(Instant created_at) {
-		this.created_at = created_at;
-	}
+  public void setActive(boolean isActive) {
+    this.isActive = isActive;
+  }
 
-	
+  public Role getRole() {
+    return role;
+  }
+
+  public void setRole(Role role) {
+    this.role = role;
+  }
+
+  public Instant getCreated_at() {
+    return created_at;
+  }
+
+  public void setCreated_at(Instant created_at) {
+    this.created_at = created_at;
+  }
+
 }
