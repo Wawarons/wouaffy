@@ -9,6 +9,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.wouaffy.ResponseData;
@@ -68,15 +70,28 @@ public class UserController {
 
     if (authenticate.isAuthenticated()) {
 
-      Map<String, String> bearer = this.jwtService.generate(authentificationDTO.email());
+      Map<String, String> token = this.jwtService.generate(authentificationDTO.email());
 
-      Cookie cookie = new Cookie("token", bearer.get("Bearer"));
+      Cookie cookie = new Cookie("token", token.get("Token"));
       cookie.setHttpOnly(true);
       cookie.setSecure(true);
+      cookie.setPath("/");
+      cookie.setMaxAge(30 * 60);
+
+      response.addCookie(cookie);
 
       return responseService.createResponse(200, "Login successfully.");
     }
 
-    return responseService.createResponse(400, "Bad credentials.");
+    return responseService.createResponse(401, "Bad credentials.");
+  }
+
+  @RequestMapping(value = "/signout", method = RequestMethod.GET)
+  public ResponseEntity<ResponseData> signOut(HttpServletResponse response) {
+    Cookie cookie = new Cookie("token", "");
+    cookie.setPath("/");
+    cookie.setMaxAge(0);
+    response.addCookie(cookie);
+    return responseService.createResponse(200, "Logout successfully.");
   }
 }

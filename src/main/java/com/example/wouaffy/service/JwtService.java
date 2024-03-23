@@ -50,14 +50,14 @@ public class JwtService {
         JWTClaimNames.EXPIRATION_TIME, new Date(expirationTime),
         JWTClaimNames.SUBJECT, user.getEmail());
 
-    final String bearer = Jwts.builder()
+    final String token = Jwts.builder()
         .issuedAt(new Date())
         .expiration(new Date(System.currentTimeMillis() + expirationTime))
         .subject(user.getEmail())
         .claims(claims)
         .signWith(hmacKey)
         .compact();
-    return Map.of("Bearer", bearer);
+    return Map.of("Token", token);
   }
 
   public Date getExpirationDateFromToken(String token) throws ParseException {
@@ -65,16 +65,12 @@ public class JwtService {
 
   }
 
-  private Object getClaim(String token, String claim) throws ParseException {
-    return JWTParser.parse(token).getJWTClaimsSet().getClaim(claim);
+  public String getClaimByName(String token, String claim) throws ParseException {
+    return JWTParser.parse(token).getJWTClaimsSet().getStringClaim(claim);
   }
 
   public boolean isTokenExpired(String token) throws ParseException {
     Date expiratioDate = getExpirationDateFromToken(token);
     return expiratioDate.before(new Date());
-  }
-
-  public Object extractClaim(String token, String claim) throws ParseException {
-    return getClaim(token, claim);
   }
 }

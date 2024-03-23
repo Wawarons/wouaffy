@@ -11,6 +11,7 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.stereotype.Service;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.example.wouaffy.service.CookieService;
 import com.example.wouaffy.service.JwtService;
 import com.example.wouaffy.service.UserService;
 
@@ -24,12 +25,14 @@ public class JwtFilter extends OncePerRequestFilter {
 
   private UserService userService;
   private JwtService jwtService;
+  private CookieService cookieService;
 
   private final RequestMatcher ignoredPaths = new AntPathRequestMatcher("/auth/**");
 
-  public JwtFilter(UserService userService, JwtService jwtService) {
+  public JwtFilter(UserService userService, JwtService jwtService, CookieService cookieService) {
     this.userService = userService;
     this.jwtService = jwtService;
+    this.cookieService = cookieService;
   }
 
   @Override
@@ -42,12 +45,11 @@ public class JwtFilter extends OncePerRequestFilter {
     }
 
     String token = null;
-    String username = null;
+    String email = null;
     boolean isTokenExpired = true;
-    final String authorization = httpServletRequest.getHeader("authorization");
+    token = cookieService.getCookieByName(httpServletRequest, "token").getValue();
 
-    if (!authorization.isEmpty() && authorization.startsWith("Bearer")) {
-      token = authorization.substring(7);
+    if (token != null) {
 
       try {
         isTokenExpired = jwtService.isTokenExpired(token);
@@ -56,14 +58,14 @@ public class JwtFilter extends OncePerRequestFilter {
       }
 
       try {
-        username = (String) jwtService.extractClaim(token, "email");
+        email = (String) jwtService.getClaimByName(token, "email");
       } catch (ParseException e) {
         e.printStackTrace();
       }
     }
 
-    if (!isTokenExpired && username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-      UserDetails user = userService.loadUserByUsername(username);
+    if (!isTokenExpired && email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+      UserDetails user = userService.loadUserByUsername(email);
       UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(user,
           null, user.getAuthorities());
       SecurityContextHolder.getContext().setAuthentication(authenticationToken);

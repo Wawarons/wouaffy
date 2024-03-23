@@ -3,6 +3,13 @@ package com.example.wouaffy;
 public class ResponseData {
   private int code;
   private String message;
+  private Data<?> data;
+
+  public ResponseData(int code, String message, Data<?> data) {
+    this.code = code;
+    this.message = message;
+    this.data = data;
+  }
 
   public ResponseData(int code, String message) {
     this.code = code;
@@ -30,6 +37,14 @@ public class ResponseData {
 
   public void setMessage(String message) {
     this.message = message;
+  }
+
+  public Data<?> getData() {
+    return data;
+  }
+
+  public void setData(Data<?> data) {
+    this.data = data;
   }
 
 }
