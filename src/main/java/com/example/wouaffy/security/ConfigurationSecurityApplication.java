@@ -37,7 +37,7 @@ public class ConfigurationSecurityApplication {
   public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
     return httpSecurity.csrf(AbstractHttpConfigurer::disable).authorizeHttpRequests(
         authorization -> authorization
-            .requestMatchers(POST, "/auth/*").permitAll()
+            .requestMatchers(POST, "/auth/**").permitAll()
             .anyRequest().authenticated())
         .sessionManagement(httpSecuritySessionManagementConfigurer -> httpSecuritySessionManagementConfigurer
             .sessionCreationPolicy(SessionCreationPolicy.STATELESS))

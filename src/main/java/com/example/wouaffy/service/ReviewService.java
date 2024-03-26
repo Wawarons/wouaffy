@@ -42,6 +42,10 @@ public class ReviewService {
     }
   }
 
+  public void editReview(Review review) {
+    this.reviewRepository.save(review);
+  }
+
   public List<Review> getReviewsById(long id) {
     return this.reviewRepository.findAllByMovieId(id);
   }

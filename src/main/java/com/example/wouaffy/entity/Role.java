@@ -15,36 +15,38 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "role")
 public class Role {
-	
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long id;
-	
-	@Column(name = "role")
-	@Enumerated(EnumType.STRING)
-	private RoleType role;
 
-	public Role(RoleType role) {
-		this.role = role;
-	}
-	
-	public Role(){};
-	
-	public long getId() {
-		return id;
-	}
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private long id;
 
-	public void setId(long id) {
-		this.id = id;
-	}
+  @NonNull
+  @Column(name = "role")
+  @Enumerated(EnumType.STRING)
+  private RoleType role;
 
-	@NonNull
-	public RoleType getRole() {
-		return role;
-	}
+  public Role(RoleType role) {
+    this.role = role;
+  }
 
-	public void setRole(RoleType role) {
-		this.role = role;
-	}
-	
+  public Role() {
+  };
+
+  public long getId() {
+    return id;
+  }
+
+  public void setId(long id) {
+    this.id = id;
+  }
+
+  @NonNull
+  public RoleType getRole() {
+    return role;
+  }
+
+  public void setRole(RoleType role) {
+    this.role = role;
+  }
+
 }

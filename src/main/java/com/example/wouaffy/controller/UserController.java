@@ -2,6 +2,8 @@ package com.example.wouaffy.controller;
 
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -22,6 +24,10 @@ import com.example.wouaffy.service.UserService;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 
 @RestController
 public class UserController {
@@ -38,6 +44,11 @@ public class UserController {
   @Autowired
   private JwtService jwtService;
 
+  ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+  Validator validator = factory.getValidator();
+
+  Logger log = LoggerFactory.getLogger(UserController.class);
+
   @PostMapping(path = "/auth/activation")
   public ResponseEntity<ResponseData> accountActivation(@RequestBody Map<String, String> activation) {
 
@@ -50,18 +61,15 @@ public class UserController {
   }
 
   @PostMapping(path = "/auth/signup")
-  public ResponseEntity<ResponseData> signUp(@RequestBody User user) {
-
-    if (user.getEmail().isEmpty() || user.getUsername().isEmpty() || user.getPassword().isEmpty()) {
-      return responseService.createResponse(400, "Values cannot be null.");
-    }
+  public ResponseEntity<String> signUp(@Valid @RequestBody User user) {
 
     this.userService.signUp(user);
-    return responseService.createResponse(200, "Account created successfully.");
+    return ResponseEntity.ok("Account created successfully.");
+
   }
 
   @PostMapping(path = "/auth/login")
-  public ResponseEntity<ResponseData> login(@RequestBody AuthentificationDTO authentificationDTO,
+  public ResponseEntity<String> login(@RequestBody AuthentificationDTO authentificationDTO,
       HttpServletResponse response) {
 
     final Authentication authenticate = authenticationManager.authenticate(
@@ -80,18 +88,20 @@ public class UserController {
 
       response.addCookie(cookie);
 
-      return responseService.createResponse(200, "Login successfully.");
+      return ResponseEntity.ok("Login successfully.");
     }
 
-    return responseService.createResponse(401, "Bad credentials.");
+    return ResponseEntity.badRequest().body("Bad credentials");
   }
 
   @RequestMapping(value = "/signout", method = RequestMethod.GET)
-  public ResponseEntity<ResponseData> signOut(HttpServletResponse response) {
+  public ResponseEntity<String> signOut(HttpServletResponse response) {
     Cookie cookie = new Cookie("token", "");
     cookie.setPath("/");
     cookie.setMaxAge(0);
     response.addCookie(cookie);
-    return responseService.createResponse(200, "Logout successfully.");
+    return ResponseEntity.ok("Sign out successfully.");
+
   }
+
 }

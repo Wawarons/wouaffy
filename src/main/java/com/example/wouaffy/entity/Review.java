@@ -7,6 +7,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "review")
@@ -16,10 +19,13 @@ public class Review {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private long id;
 
+  @DecimalMin(value = "0", inclusive = true, message = "Score must be between 0 & 5.")
+  @DecimalMax(value = "5", inclusive = true, message = "Score must be between 0 & 5.")
   @NonNull
   @Column(name = "review_score")
   private float score;
 
+  @Size(min = 5, max = 300)
   @Column(name = "review_comment")
   private String comment;
 
@@ -30,6 +36,10 @@ public class Review {
   @NonNull
   @Column(name = "review_user_id")
   private long userId;
+
+  public long getId() {
+    return this.id;
+  }
 
   public float getScore() {
     return score;
@@ -47,7 +57,7 @@ public class Review {
     this.comment = comment;
   }
 
-  public long getMovie_id() {
+  public long getMovieId() {
     return movieId;
   }
 

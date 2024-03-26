@@ -11,6 +11,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "validation")
@@ -29,6 +30,7 @@ public class Validation {
   private Instant expiration;
 
   @NonNull
+  @Size(min = 6, max = 6, message = "Code must contain 6 digits.")
   @Column(name = "validation_code")
   private String code;
 

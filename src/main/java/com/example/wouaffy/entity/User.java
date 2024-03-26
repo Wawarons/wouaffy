@@ -17,6 +17,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "user_account")
@@ -27,10 +29,12 @@ public class User implements UserDetails {
   private long id;
 
   @NonNull
+  @Size(min = 5, max = 20, message = "Username must be between 5 and 20 characters")
   @Column(name = "user_account_username")
   private String username;
 
   @NonNull
+  @Email(message = "Email should be valid")
   @Column(name = "user_account_email")
   private String email;
 
@@ -38,6 +42,7 @@ public class User implements UserDetails {
   @Column(name = "user_account_password")
   private String password;
 
+  @NonNull
   @Column(name = "user_account_active")
   private boolean isActive = false;
 

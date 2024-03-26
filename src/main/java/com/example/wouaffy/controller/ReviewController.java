@@ -48,4 +48,10 @@ public class ReviewController {
     return responseService.createResponse(200, "Review added successfully.");
   }
 
+  @PostMapping(path = "/edit/review")
+  public ResponseEntity<ResponseData> editReview(@RequestBody Review review) {
+    this.reviewService.editReview(review);
+    return this.responseService.createResponse(200, "Review edit successfully.");
+  }
+
 }
